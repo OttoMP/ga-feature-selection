@@ -7,7 +7,7 @@ import SVM_HParam_Opt_Functions as svm_hp_opt
 
 
 # Loading the data, shuffling and preprocessing it
-data = pd.read_csv("energy_efficiency.csv")
+data = pd.read_csv("../energy_efficiency.csv")
 data = data.sample(frac=1)
 
 # original data
