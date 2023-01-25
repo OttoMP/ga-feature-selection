@@ -21,23 +21,22 @@ var_prep = preprocessing.MinMaxScaler()
 x = var_prep.fit_transform(x_with_dummies)
 
 data_count = len(x)
-print()
-print("number of obsrvations:",data_count)
+print("number of observations:",data_count)
+print("-----------------------------------")
 
 
-# hyperparameters (user inputted parameters)
+# Hyperparameters (user inputted parameters)
+#-------------------------------------------
 prob_crsvr = 1 # probablity of crossover
 prob_mutation = 0.3 # probablity of mutation
 population = 40 # population number
 generations = 20 # generation number
-
 kfold = 3
-
 # x and y decision variables' encoding
 # 12 genes for x and 12 genes for y (arbitrary number)
-# chromosome = np.array([0,1,0,0,0,1,0,0,1,0,0,1,
-#                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
-chromosome_size = 24
+x_var_size = 12
+y_var_size = 12
+chromosome_size = x_var_size+y_var_size
 
 # create an empty array to store a solution from each generation
 # for each generation, we want to save the best solution in that generation
@@ -45,12 +44,11 @@ chromosome_size = 24
 best_of_a_generation = np.empty((0,chromosome_size+1))
 
 # so now, pool_of_solutions, has n (population) chromosomes
+# chromosome = np.array([0,1,0,0,0,1,0,0,1,0,0,1,
+#                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
 pool_of_solutions = np.array([np.random.randint(2, size=24) for _ in range(population)])
 
-
 #start_time = time.time() # start time (timing purposes)
-
-#gen = 1 # we start at generation no.1 (tracking purposes)
 
 for gen in range(generations): # do it n (generation) times
 
@@ -66,19 +64,13 @@ for gen in range(generations): # do it n (generation) times
     # for each generation
     sorted_best = np.empty((0,chromosome_size+1))
 
-    print()
-    print()
-    print("--> Generation: #", gen) # tracking purposes
-
-
-    #family = 1 # we start at family no.1 (tracking purposes)
-
+    print("--> Generation: #", gen+1) # tracking purposes
+    print("-----------------------------------")
 
     for family in range(int(population/2)): # population/2 because each gives 2 parents
 
-        print()
         print("--> Family: #", family+1) # tracking purposes
-
+        print("-----------------------------------")
 
         # selecting 2 parents using tournament selection
         # "genf.find_parents_ts"[0] gives parent_1
@@ -148,8 +140,6 @@ for gen in range(generations): # do it n (generation) times
         # since we ended up with 2 solutions, we move on to the next possible solutions
 
 
-    # check line 60
-    # check line 164
     # we replace the initial (before) population with the new one (current generation)
     # this new pool of solutions becomes the starting population of the next generation
     pool_of_solutions = new_population
@@ -169,12 +159,9 @@ for gen in range(generations): # do it n (generation) times
                                       sorted_best[0]))
 
 
-
 #end_time = time.time() # end time (timing purposes)
 
 
-
-# check line 171
 # for our very last generation, we have the last population
 # for this array of last population (convergence), there is a best solution
 # so we sort them from best to worst

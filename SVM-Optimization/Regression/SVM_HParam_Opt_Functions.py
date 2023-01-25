@@ -76,8 +76,7 @@ def find_parents_ts(all_solutions,x,y):
 
     # get objective function value (fitness) for each possible parent
     # index no.2 because the objective_value function gives the fitness value at index no.2
-    tournament = [(parent, objective_value(x,y,parent)[2]) for parent in posb_parents]
-    tournament.sort(key = lambda x: x[1])
+    tournament = sorted([(parent, objective_value(x,y,parent)[2]) for parent in posb_parents], key = lambda x: x[1])
 
     return tournament[0][0]
 
@@ -88,7 +87,6 @@ def find_parents_ts(all_solutions,x,y):
 def crossover(parent_1,parent_2,prob_crsvr=1):
 
     rand_num_to_crsvr_or_not = np.random.rand() # do we crossover or not???
-
     if rand_num_to_crsvr_or_not < prob_crsvr:
         index_1 = np.random.randint(0,len(parent_1))
         index_2 = np.random.randint(index_1,len(parent_1))
@@ -165,7 +163,6 @@ def mutation(child_1,prob_mutation=0.2):
     for index in range(len(child_1)): # for each gene (index)
 
         rand_num_to_mutate_or_not = np.random.rand() # do we mutate or no???
-
         # if the rand_num_to_mutate_or_not is less that the probability of mutation
                 # then we mutate at that given gene (index we are currently at)
         if rand_num_to_mutate_or_not < prob_mutation:
