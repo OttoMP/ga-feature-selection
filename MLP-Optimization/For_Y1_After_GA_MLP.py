@@ -7,7 +7,7 @@ from sklearn.neural_network import MLPRegressor
 
 # Loading the data, shuffling and preprocessing it
 
-Data = pd.read_csv("C:/Users/Dana Bani-Hani/Desktop/My Files/My Courses/Machine Learning Optimization Using Genetic Algorithm/Dataset.csv")
+Data = pd.read_csv("../Dataset/energy_efficiency.csv")
 
 Data = Data.sample(frac=1)
 
