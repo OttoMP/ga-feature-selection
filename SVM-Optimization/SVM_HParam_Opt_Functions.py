@@ -1,20 +1,7 @@
-###################################################################
-### ENERGY EFFICIENCY DATASET (Y1 OUTPUT)
-### SUPPORT VECTOR MACHINE
-### FUNCTION DEFINITIONS
-### OPTIMIZE HYPERPARAMETER C (CONTINUOUS)
-### OPTIMIZE HYPERPARAMETER GAMMA (CONTINUOUS)
-### DECODING / OBJ. VAL. / PARENT SELECTION / CROSSOVER / MUTATION
-###################################################################
-### Owner: Dana Bani-Hani
-### Copyright © 2020 Curiosity for Data Science
-###################################################################
-
-
-
 import numpy as np
 from sklearn.model_selection import KFold
 from sklearn import svm
+from copy import deepcopy
 
 
 
@@ -80,58 +67,19 @@ def objective_value(x,y,chromosome,kfold=3):
     return c_hyperparameter,gamma_hyperparameter,avg_error
 
 
-
-
 # finding 2 parents from the pool of solutions
 # using the tournament selection method
 def find_parents_ts(all_solutions,x,y):
 
-    # make an empty array to place the selected parents
-    parents = np.empty((0,np.size(all_solutions,1)))
+    # select 3 random parents from the pool of solutions you have
+    posb_parents = all_solutions[np.random.choice(all_solutions.shape[0], 3, replace=False)]
 
-    for i in range(2): # do the process twice to get 2 parents
+    # get objective function value (fitness) for each possible parent
+    # index no.2 because the objective_value function gives the fitness value at index no.2
+    tournament = [(parent, objective_value(x,y,parent)[2]) for parent in posb_parents]
+    tournament.sort(key = lambda x: x[1])
 
-        # select 3 random parents from the pool of solutions you have
-
-        # get 3 random integers
-        indices_list = np.random.choice(len(all_solutions),3,
-                                        replace=False)
-
-        # get the 3 possible parents for selection
-        posb_parent_1 = all_solutions[indices_list[0]]
-        posb_parent_2 = all_solutions[indices_list[1]]
-        posb_parent_3 = all_solutions[indices_list[2]]
-
-
-        # get objective function value (fitness) for each possible parent
-        # index no.2 because the objective_value function gives the fitness value at index no.2
-        obj_func_parent_1 = objective_value(x=x,y=y,
-                                            chromosome=posb_parent_1)[2] # possible parent 1
-        obj_func_parent_2 = objective_value(x=x,y=y,
-                                            chromosome=posb_parent_2)[2] # possible parent 2
-        obj_func_parent_3 = objective_value(x=x,y=y,
-                                            chromosome=posb_parent_3)[2] # possible parent 3
-
-
-        # find which parent is the best
-        min_obj_func = min(obj_func_parent_1,obj_func_parent_2,
-                           obj_func_parent_3)
-
-        if min_obj_func == obj_func_parent_1:
-            selected_parent = posb_parent_1
-        elif min_obj_func == obj_func_parent_2:
-            selected_parent = posb_parent_2
-        else:
-            selected_parent = posb_parent_3
-
-        # put the selected parent in the empty array we created above
-        parents = np.vstack((parents,selected_parent))
-
-    parent_1 = parents[0,:] # parent_1, first element in the array
-    parent_2 = parents[1,:] # parent_2, second element in the array
-
-    return parent_1,parent_2 # the defined function will return 2 arrays
-
+    return tournament[0][0]
 
 
 # crossover between the 2 parents to create 2 children
@@ -139,58 +87,45 @@ def find_parents_ts(all_solutions,x,y):
 # default probability of crossover is 1
 def crossover(parent_1,parent_2,prob_crsvr=1):
 
-    child_1 = np.empty((0,len(parent_1)))
-    child_2 = np.empty((0,len(parent_2)))
-
-
-    rand_num_to_crsvr_or_not = np.random.rand() # do we crossover or no???
+    rand_num_to_crsvr_or_not = np.random.rand() # do we crossover or not???
 
     if rand_num_to_crsvr_or_not < prob_crsvr:
         index_1 = np.random.randint(0,len(parent_1))
-        index_2 = np.random.randint(0,len(parent_1))
-
-        # get different indices
-        # to make sure you will crossover at least one gene
-        while index_1 == index_2:
-            index_2 = np.random.randint(0,len(parent_1))
-
-        index_parent_1 = min(index_1,index_2)
-        index_parent_2 = max(index_1,index_2)
-
+        index_2 = np.random.randint(index_1,len(parent_1))
 
         ### FOR PARENT_1 ###
 
         # first_seg_parent_1 -->
         # for parent_1: the genes from the beginning of parent_1 to the
                 # beginning of the middle segment of parent_1
-        first_seg_parent_1 = parent_1[:index_parent_1]
+        first_seg_parent_1 = parent_1[:index_1]
 
         # middle segment; where the crossover will happen
         # for parent_1: the genes from the index chosen for parent_1 to
                 # the index chosen for parent_2
-        mid_seg_parent_1 = parent_1[index_parent_1:index_parent_2+1]
+        mid_seg_parent_1 = parent_1[index_1:index_2+1]
 
         # last_seg_parent_1 -->
         # for parent_1: the genes from the end of the middle segment of
                 # parent_1 to the last gene of parent_1
-        last_seg_parent_1 = parent_1[index_parent_2+1:]
+        last_seg_parent_1 = parent_1[index_2+1:]
 
 
         ### FOR PARENT_2 ###
 
         # first_seg_parent_2 --> same as parent_1
-        first_seg_parent_2 = parent_2[:index_parent_1]
+        first_seg_parent_2 = parent_2[:index_1]
 
         # mid_seg_parent_2 --> same as parent_1
-        mid_seg_parent_2 = parent_2[index_parent_1:index_parent_2+1]
+        mid_seg_parent_2 = parent_2[index_1:index_2+1]
 
         # last_seg_parent_2 --> same as parent_1
-        last_seg_parent_2 = parent_2[index_parent_2+1:]
+        last_seg_parent_2 = parent_2[index_2+1:]
 
 
         ### CREATING CHILD_1 ###
 
-        # the first segmant from parent_1
+        # the first segment from parent_1
         # plus the middle segment from parent_2
         # plus the last segment from parent_1
         child_1 = np.concatenate((first_seg_parent_1,mid_seg_parent_2,
@@ -211,8 +146,8 @@ def crossover(parent_1,parent_2,prob_crsvr=1):
     # when prob_crsvr == 1, then rand_num_to_crsvr_or_not will always be less
             # than prob_crsvr, so we will always crossover then
     else:
-        child_1 = parent_1
-        child_2 = parent_2
+        child_1 = deepcopy(parent_1)
+        child_2 = deepcopy(parent_2)
 
     return child_1,child_2 # the defined function will return 2 arrays
 
@@ -225,69 +160,13 @@ def crossover(parent_1,parent_2,prob_crsvr=1):
 # mutation for the 2 children
 # functions inputs are child_1, child_2, and the probability you would like for mutation
 # default probability of mutation is 0.2
-def mutation(child_1,child_2,prob_mutation=0.2):
+def mutation(child_1,prob_mutation=0.2):
 
-    # mutated_child_1
-    mutated_child_1 = np.empty((0,len(child_1)))
-
-    t = 0 # start at the very first index of child_1
-    for i in child_1: # for each gene (index)
+    for index in range(len(child_1)): # for each gene (index)
 
         rand_num_to_mutate_or_not = np.random.rand() # do we mutate or no???
 
         # if the rand_num_to_mutate_or_not is less that the probability of mutation
                 # then we mutate at that given gene (index we are currently at)
         if rand_num_to_mutate_or_not < prob_mutation:
-
-            if child_1[t] == 0: # if we mutate, a 0 becomes a 1
-                child_1[t] = 1
-
-            else:
-                child_1[t] = 0  # if we mutate, a 1 becomes a 0
-
-            mutated_child_1 = child_1
-
-            t = t+1
-
-        else:
-            mutated_child_1 = child_1
-
-            t = t+1
-
-
-    # mutated_child_2
-    # same process as mutated_child_1
-    mutated_child_2 = np.empty((0,len(child_2)))
-
-    t = 0
-    for i in child_2:
-
-        rand_num_to_mutate_or_not = np.random.rand() # prob. to mutate
-
-        if rand_num_to_mutate_or_not < prob_mutation:
-
-            if child_2[t] == 0:
-                child_2[t] = 1
-
-            else:
-                child_2[t] = 0
-
-            mutated_child_2 = child_2
-
-            t = t+1
-
-        else:
-            mutated_child_2 = child_2
-
-            t = t+1
-
-    return mutated_child_1,mutated_child_2 # the defined function will return 2 arrays
-
-
-
-
-
-
-
-
-
+            child_1[index] = 1 - child_1[index] #flip gene
