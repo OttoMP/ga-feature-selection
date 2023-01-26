@@ -9,6 +9,7 @@ from copy import deepcopy
 def objective_value(x,y,solution,kfold=3):
 
     chromosome = solution[2:]
+    #print("Chromosome", chromosome)
     # x = c
     lb_x = 10 # lower bound for chromosome x
     ub_x = 1000 # upper bound for chromosome x
@@ -38,31 +39,42 @@ def objective_value(x,y,solution,kfold=3):
     learning_rate = (x_bit_sum*precision_x)+lb_x # Decoded X3
     momentum = (y_bit_sum*precision_y)+lb_y # Decoded X4
 
+    #learning_rate = 0.014690694906460768
+    #momentum =  0.3528968169194617
+    #print("Learning Rate", learning_rate)
+    #print("Momentum", momentum)
 
     kf = KFold(n_splits=kfold)
     comb1 = int(solution[0])
+    #print("Comb 1", comb1)
     comb2 = int(solution[1])
+    #print("Comb 2", comb2)
     # objective function value for the decoded x and decoded y
     sum_of_error = 0
+    #print("------------------------")
     for train_index,test_index in kf.split(x):
         x_train,x_test = x[train_index],x[test_index]
         y_train,y_test = y[train_index],y[test_index]
 
-        Hid_Lay = ()
-        for i in range(comb2):
-            Hid_Lay = Hid_Lay + (comb1,)
-
+        Hid_Lay = [comb1 for _ in range(comb2)]
+        #print("Hidden Layer", Hid_Lay)
         model1 = MLPRegressor(activation='relu',hidden_layer_sizes=Hid_Lay,
                             learning_rate_init=learning_rate,momentum=momentum)
 
         model1.fit(x_train, y_train)
         prediction=model1.predict(x_test)
         accuracy=model1.score(x_test,y_test)
+        #print("Accuracy (score)", accuracy)
 
         error = 1-accuracy
+        #print("Error", error)
         sum_of_error += error
+        #print("------------------------")
+        #print("Sum of error", sum_of_error)
+        #print("------------------------")
 
     avg_error = sum_of_error/kfold
+    #print("Avg Error", avg_error)
 
     # the defined function will return 3 values
     return learning_rate,momentum,avg_error
@@ -200,7 +212,7 @@ def mutation(child,prob_mutation=0.1, prob_mutation_int=0.2
             elif child[0] == lb_x1:
                 c_X1 = child[0]
             else:
-                c_X1 = child[0] - 1
+                c_X1 = child[0] - 2
     else:
         c_X1 = child[0]
 

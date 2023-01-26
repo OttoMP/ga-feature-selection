@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import random as rd
+from copy import deepcopy
 #import time
 from sklearn import preprocessing
 import MLP_HParam_Opt_Functions as mlp_hp_opt
@@ -49,17 +50,12 @@ x_var_size = 15
 y_var_size = 15
 chromosome_size = x_var_size+y_var_size
 
-# create an empty array to store a solution from each generation
-# for each generation, we want to save the best solution in that generation
-# to compare with the convergence of the algorithm
-best_of_a_generation = np.empty((0,chromosome_size+3))
-
 # so now, pool_of_solutions, has n (population) chromosomes
-# chromosome = np.array([0,1,0,0,0,1,0,0,1,0,0,1,
+# solution = np.array([X3, X4, 0,1,0,0,0,1,0,0,1,0,0,1,
 #                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
-gene_pool = np.array([np.random.randint(2, size=chromosome_size) for _ in range(population)])
 pool_of_solutions = np.empty((0, chromosome_size+2))
-#TODO add solver type to gene
+gene_pool = np.array([np.random.randint(2, size=chromosome_size) for _ in range(population)])
+#Later add solver type to solution
 #Solver_Type = ['adam']
 for i, gene in enumerate(gene_pool): # Shuffles the elements in the vector n times and stores them
     #ST = rd.choice(Solver_Type)
@@ -69,6 +65,23 @@ for i, gene in enumerate(gene_pool): # Shuffles the elements in the vector n tim
     #n_list_ST = np.append(n_list_ST,ST)
 
 #start_time = time.time() # start time (timing purposes)
+
+population_0 = np.empty((0, chromosome_size+3))
+for i, solution in enumerate(pool_of_solutions):
+    individual = np.insert(solution, 0, mlp_hp_opt.objective_value(x,y,solution[1:],kfold)[2])
+    population_0 = np.vstack((population_0, individual))
+
+sorted_best = np.array(sorted(population_0, key=lambda x:x[0]))
+darwin_guy=sorted_best[0]
+
+
+# create an empty array to store a solution from each generation
+# for each generation, we want to save the best solution in that generation
+# to compare with the convergence of the algorithm
+best_of_a_generation = np.array([darwin_guy])
+
+
+pool_of_solutions = np.vstack((pool_of_solutions, darwin_guy[1:]))
 
 for gen in range(generations): # do it n (generation) times
 
@@ -165,25 +178,25 @@ for gen in range(generations): # do it n (generation) times
         # then we go to the next generation and start over
         # since we ended up with 2 solutions, we move on to the next possible solutions
 
-
-    # we replace the initial (before) population with the new one (current generation)
-    # this new pool of solutions becomes the starting population of the next generation
-    pool_of_solutions = new_population
-
-
     # for each generation
     # we want to find the best solution in that generation
     # so we sort them based on index [0], which is the obj val
     sorted_best = np.array(sorted(new_population_with_obj_val,
                                                key=lambda x:x[0]))
-
+    # Elitism
+    if darwin_guy[0] > sorted_best[0][0]:
+        darwin_guy = deepcopy(sorted_best[0])
 
     # since we sorted them from best to worst
     # the best in that generation would be the first solution in the array
     # so index [0] of the "sorted_best" array
     best_of_a_generation = np.vstack((best_of_a_generation,
-                                      sorted_best[0]))
+                                      darwin_guy))
 
+    # we replace the initial (before) population with the new one (current generation)
+    # this new pool of solutions becomes the starting population of the next generation
+    pool_of_solutions = new_population
+    pool_of_solutions = np.vstack((new_population, darwin_guy[1:]))
 
 #end_time = time.time() # end time (timing purposes)
 
@@ -193,7 +206,6 @@ for gen in range(generations): # do it n (generation) times
 # so we sort them from best to worst
 sorted_last_population = np.array(sorted(new_population_with_obj_val,
                                          key=lambda x:x[0]))
-
 sorted_best_of_a_generation = np.array(sorted(best_of_a_generation,
                                          key=lambda x:x[0]))
 
@@ -218,14 +230,13 @@ print("------------------------------")
 print()
 #print("Execution Time in Seconds:",end_time - start_time) # exec. time
 #print()
-print("Final Solution (Convergence):",best_string_convergence[1:]) # final solution entire chromosome
-print("Encoded Learning Rate (Convergence):",best_string_convergence[3:3+chromosome_size+1]) # final solution x chromosome
-print("Encoded Momentum (Convergence):",best_string_convergence[3+chromosome_size+1:]) # final solution y chromosome
+print("Final Solution (Convergence):",best_string_convergence) # final solution entire chromosome
+print("Encoded Learning Rate (Convergence):",best_string_convergence[3:3+(chromosome_size//2)+1]) # final solution x chromosome
+print("Encoded Momentum (Convergence):",best_string_convergence[3+(chromosome_size//2)+1:]) # final solution y chromosome
 print()
-print("Final Solution (Best):",best_string_overall[1:]) # final solution entire chromosome
-print("Encoded Learning Rate (Best):",best_string_overall[3:3+chromosome_size+1]) # final solution x chromosome
-print("Encoded Momentum (Best):",best_string_overall[3+chromosome_size+1]) # final solution y chromosome
-
+print("Final Solution (Best):",best_string_overall) # final solution entire chromosome
+print("Encoded Learning Rate (Best):",best_string_overall[3:3+(chromosome_size//2)+1]) # final solution x chromosome
+print("Encoded Momentum (Best):",best_string_overall[3+(chromosome_size//2)+1:]) # final solution y chromosome
 # to decode the x and y chromosomes to their real values
 final_solution_convergence = mlp_hp_opt.objective_value(x=x,y=y,
                                                         solution=best_string_convergence[1:],
