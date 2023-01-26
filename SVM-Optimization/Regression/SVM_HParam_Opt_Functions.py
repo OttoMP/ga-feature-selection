@@ -21,23 +21,17 @@ def objective_value(x,y,chromosome,kfold=3):
     precision_x = (ub_x-lb_x)/((2**len_x)-1) # precision for decoding x
     precision_y = (ub_y-lb_y)/((2**len_y)-1) # precision for decoding y
 
-    z = 0 # because we start at 2^0, in the formula
-    t = 1 # because we start at the very last element of the vector [index -1]
+    #z = 0 # because we start at 2^0, in the formula
+    #t = 1 # because we start at the very last element of the vector [index -1]
     x_bit_sum = 0 # initiation (sum(bit)*2^i is 0 at first)
     for i in range(len(chromosome)//2):
-        x_bit = chromosome[-t]*(2**z)
-        x_bit_sum = x_bit_sum + x_bit
-        t = t+1
-        z = z+1
+        x_bit_sum += chromosome[-(i+1)]*(2**i)
 
-    z = 0 # because we start at 2^0, in the formula
-    t = 1 + (len(chromosome)//2) # [6,8,3,9] (first 2 are y, so index will be 1+2 = -3)
+    #z = 0 # because we start at 2^0, in the formula
+    #t = 1 + (len(chromosome)//2) # [6,8,3,9] (first 2 are y, so index will be 1+2 = -3)
     y_bit_sum = 0 # initiation (sum(bit)*2^i is 0 at first)
     for j in range(len(chromosome)//2):
-        y_bit = chromosome[-t]*(2**z)
-        y_bit_sum = y_bit_sum + y_bit
-        t = t+1
-        z = z+1
+        y_bit_sum += chromosome[-(j + 1 + (len(chromosome)//2))]*(2**j)
 
     # the formulas to decode the chromosome of 0s and 1s to an actual number, the value of x or y
     c_hyperparameter = (x_bit_sum*precision_x)+lb_x

@@ -29,8 +29,8 @@ print("-----------------------------------")
 #-------------------------------------------
 prob_crsvr = 1 # probablity of crossover
 prob_mutation = 0.3 # probablity of mutation
-population = 40 # population number
-generations = 20 # generation number
+population = 10 # population number
+generations = 2 # generation number
 kfold = 3
 # x and y decision variables' encoding
 # 12 genes for x and 12 genes for y (arbitrary number)
