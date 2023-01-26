@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import random as rd
-from sklearn import cross_validation
+from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
 from sklearn.neural_network import MLPRegressor
 
@@ -37,19 +37,19 @@ Aa1 = 0
 
 Cnt1 = len(X)
 
-kf = cross_validation.KFold(Cnt1, n_folds=kfold)
+kf = train_test_split.KFold(Cnt1, n_folds=kfold)
 
 for train_index, test_index in kf:
     X_train, X_test = X[train_index], X[test_index]
     Y_train, Y_test = Y[train_index], Y[test_index]
-    
+
     model1 = MLPClass
     model1.fit(X_train, Y_train)
     Pa_1=model1.predict(X_test)
     AC1=model1.score(X_test,Y_test)
-    
+
     Aa1 += AC1
-       
+
 print()
 print("R2 for MLP W/O GA: %f" % (Aa1/kfold))
 
@@ -64,19 +64,19 @@ Aa1 = 0
 
 Cnt1 = len(X)
 
-kf = cross_validation.KFold(Cnt1, n_folds=kfold)
+kf = train_test_split.KFold(Cnt1, n_folds=kfold)
 
 for train_index, test_index in kf:
     X_train, X_test = X[train_index], X[test_index]
     Y_train, Y_test = Y[train_index], Y[test_index]
-    
+
     model1 = MLPClass
     model1.fit(X_train, Y_train)
     Pa_1=model1.predict(X_test)
     AC1=model1.score(X_test,Y_test)
-    
+
     Aa1 += AC1
-       
+
 print()
 print("R2 for MLP W/ GA: %f" % (Aa1/kfold))
 
