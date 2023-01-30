@@ -2,17 +2,18 @@ import pandas as pd
 from sklearn import svm
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
-from sklearn import cross_validation
+from sklearn.model_selection import KFold
 import numpy as np
 import random as rd
 
-Data = pd.read_csv("spambase.csv")
+print("Reading Data")
+Data = pd.read_csv("../../Dataset/spambase.csv")
 
 Data = Data.sample(frac=1)
 
 Xold = Data.drop(["Y"],axis=1)
 Y = pd.DataFrame(Data,columns=["Y"]).values
-
+Y = Y.ravel()
 
 norm = preprocessing.MinMaxScaler()
 X = norm.fit_transform(Xold)
@@ -211,10 +212,9 @@ for i in range(gen):
             print("Decoded_Y_W1:",Decoded_Y_W1)
             '''
             P_1 = 0
-            
-            kf = cross_validation.KFold(Cnt1,n_folds=kfold)
-            
-            for train_index,test_index in kf:
+    
+            kf = KFold(n_splits=kfold)
+            for train_index,test_index in kf.split(X):
                 X_train,X_test = X[train_index],X[test_index]
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
@@ -265,9 +265,8 @@ for i in range(gen):
             '''
             P_1 = 0
             
-            kf = cross_validation.KFold(Cnt1,n_folds=kfold)
-            
-            for train_index,test_index in kf:
+            kf = KFold(n_splits=kfold)
+            for train_index,test_index in kf.split(X):
                 X_train,X_test = X[train_index],X[test_index]
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
@@ -316,9 +315,8 @@ for i in range(gen):
             '''
             P_1 = 0
             
-            kf = cross_validation.KFold(Cnt1,n_folds=kfold)
-            
-            for train_index,test_index in kf:
+            kf = KFold(n_splits=kfold)
+            for train_index,test_index in kf.split(X):
                 X_train,X_test = X[train_index],X[test_index]
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
@@ -500,9 +498,8 @@ for i in range(gen):
         '''
         P_1 = 0
         
-        kf = cross_validation.KFold(Cnt1,n_folds=kfold)
-        
-        for train_index,test_index in kf:
+        kf = KFold(n_splits=kfold)
+        for train_index,test_index in kf.split(X):
             X_train,X_test = X[train_index],X[test_index]
             Y_train,Y_test = Y[train_index],Y[test_index]
             
@@ -553,9 +550,8 @@ for i in range(gen):
         '''
         P_1 = 0
         
-        kf = cross_validation.KFold(Cnt1,n_folds=kfold)
-        
-        for train_index,test_index in kf:
+        kf = KFold(n_splits=kfold)
+        for train_index,test_index in kf.split(X):
             X_train,X_test = X[train_index],X[test_index]
             Y_train,Y_test = Y[train_index],Y[test_index]
             
@@ -572,9 +568,9 @@ for i in range(gen):
         OF_So_Far_M2 = P_1/kfold
         
         
-        print()
-        print("FV for Mutated Child #1 at Gen",Generation,":",OF_So_Far_M1)
-        print("FV for Mutated Child #2 at Gen",Generation,":",OF_So_Far_M2)
+        #print()
+        #print("FV for Mutated Child #1 at Gen",Generation,":",OF_So_Far_M1)
+        #print("FV for Mutated Child #2 at Gen",Generation,":",OF_So_Far_M2)
 
 
         All_in_Generation_X_1_1_temp = Mutated_Child_1[np.newaxis]
