@@ -62,7 +62,6 @@ def objective_value(x,y,solution,kfold=3):
                             learning_rate_init=learning_rate,momentum=momentum)
 
         model1.fit(x_train, y_train)
-        prediction=model1.predict(x_test)
         accuracy=model1.score(x_test,y_test)
         #print("Accuracy (score)", accuracy)
 

@@ -50,7 +50,6 @@ def objective_value(x,y,chromosome,kfold=3):
                         C=c_hyperparameter,
                         gamma=gamma_hyperparameter)
         model.fit(x_train,np.ravel(y_train))
-
         accuracy = model.score(x_test,y_test)
         error = 1-(accuracy)
         sum_of_error += error

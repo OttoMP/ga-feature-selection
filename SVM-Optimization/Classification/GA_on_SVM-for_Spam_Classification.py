@@ -13,7 +13,6 @@ Data = Data.sample(frac=1)
 
 Xold = Data.drop(["Y"],axis=1)
 Y = pd.DataFrame(Data,columns=["Y"]).values
-Y = Y.ravel()
 
 norm = preprocessing.MinMaxScaler()
 X = norm.fit_transform(Xold)
@@ -219,7 +218,7 @@ for i in range(gen):
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
                 model1 = svm.SVC(kernel="rbf",C=Decoded_X_W1,gamma=Decoded_Y_W1)
-                model1.fit(X_train,Y_train)
+                model1.fit(X_train,np.ravel(Y_train))
                 PL1 = model1.predict(X_test)
                 
                 AC1 = model1.score(X_test,Y_test)
@@ -271,7 +270,7 @@ for i in range(gen):
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
                 model1 = svm.SVC(kernel="rbf",C=Decoded_X_W2,gamma=Decoded_Y_W2)
-                model1.fit(X_train,Y_train)
+                model1.fit(X_train,np.ravel(Y_train))
                 PL1 = model1.predict(X_test)
                 
                 AC1 = model1.score(X_test,Y_test)
@@ -321,7 +320,7 @@ for i in range(gen):
                 Y_train,Y_test = Y[train_index],Y[test_index]
                 
                 model1 = svm.SVC(kernel="rbf",C=Decoded_X_W3,gamma=Decoded_Y_W3)
-                model1.fit(X_train,Y_train)
+                model1.fit(X_train,np.ravel(Y_train))
                 PL1 = model1.predict(X_test)
                 
                 AC1 = model1.score(X_test,Y_test)
@@ -504,7 +503,7 @@ for i in range(gen):
             Y_train,Y_test = Y[train_index],Y[test_index]
             
             model1 = svm.SVC(kernel="rbf",C=Decoded_X_M1,gamma=Decoded_Y_M1)
-            model1.fit(X_train,Y_train)
+            model1.fit(X_train,np.ravel(Y_train))
             PL1 = model1.predict(X_test)
             
             AC1 = model1.score(X_test,Y_test)
@@ -556,7 +555,7 @@ for i in range(gen):
             Y_train,Y_test = Y[train_index],Y[test_index]
             
             model1 = svm.SVC(kernel="rbf",C=Decoded_X_M2,gamma=Decoded_Y_M2)
-            model1.fit(X_train,Y_train)
+            model1.fit(X_train,np.ravel(Y_train))
             PL1 = model1.predict(X_test)
             
             AC1 = model1.score(X_test,Y_test)

@@ -46,7 +46,7 @@ best_of_a_generation = np.empty((0,chromosome_size+1))
 # so now, pool_of_solutions, has n (population) chromosomes
 # chromosome = np.array([0,1,0,0,0,1,0,0,1,0,0,1,
 #                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
-pool_of_solutions = np.array([np.random.randint(2, size=24) for _ in range(population)])
+pool_of_solutions = np.array([np.random.randint(2, size=chromosome_size) for _ in range(population)])
 
 #start_time = time.time() # start time (timing purposes)
 
@@ -83,10 +83,8 @@ for gen in range(generations): # do it n (generation) times
         # crossover the 2 parents to get 2 children
         # "genf.crossover"[0] gives child_1
         # "genf.crossover"[1] gives child_2
-        child_1 = svm_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[0]
-        child_2 = svm_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[1]
+        child_1, child_2 = svm_hp_opt.crossover(parent_1,parent_2,
+                                                prob_crsvr=prob_crsvr)[0]
 
 
         # mutating the 2 children to get 2 mutated children

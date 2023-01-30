@@ -30,7 +30,6 @@ prob_crsvr = 1 # probablity of crossover
 prob_crsvr_int = 0.3 # Probability of crossover for integers
 prob_mutation = 0.3 # probablity of mutation
 prob_mutation_int = 0.2 # Probability of mutation for integers
-#prob_mutation_int = 0.2 # Probability of mutation for the solver
 population = 40 # population number
 generations = 20 # generation number
 kfold = 3

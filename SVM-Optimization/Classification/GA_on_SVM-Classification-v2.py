@@ -7,13 +7,13 @@ import SVM_HParam_Opt_Functions as svm_hp_opt
 
 
 # Loading the data, shuffling and preprocessing it
-Data = pd.read_csv("../../Dataset/spambase.csv")
+data = pd.read_csv("../../Dataset/spambase.csv")
 data = data.sample(frac=1)
 
 # original data
 x_org_data = pd.DataFrame(data,columns=["X1","X2","X3","X4",
                                         "X5","X6","X7","X8"])
-y = pd.DataFrame(data,columns=["Y1"]).values
+y = pd.DataFrame(data,columns=["Y"]).values
 
 x_with_dummies = pd.get_dummies(x_org_data,columns=["X6","X8"])
 var_prep = preprocessing.MinMaxScaler()
@@ -28,14 +28,14 @@ print("-----------------------------------")
 # Hyperparameters (user inputted parameters)
 #-------------------------------------------
 prob_crsvr = 1 # probablity of crossover
-prob_mutation = 0.3 # probablity of mutation
+prob_mutation = 0.2 # probablity of mutation
 population = 10 # population number
 generations = 2 # generation number
 kfold = 3
 # x and y decision variables' encoding
 # 12 genes for x and 12 genes for y (arbitrary number)
-x_var_size = 12
-y_var_size = 12
+x_var_size = 15
+y_var_size = 15
 chromosome_size = x_var_size+y_var_size
 
 # create an empty array to store a solution from each generation
@@ -46,7 +46,7 @@ best_of_a_generation = np.empty((0,chromosome_size+1))
 # so now, pool_of_solutions, has n (population) chromosomes
 # chromosome = np.array([0,1,0,0,0,1,0,0,1,0,0,1,
 #                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
-pool_of_solutions = np.array([np.random.randint(2, size=24) for _ in range(population)])
+pool_of_solutions = np.array([np.random.randint(2, size=chromosome_size) for _ in range(population)])
 
 #start_time = time.time() # start time (timing purposes)
 
@@ -83,11 +83,8 @@ for gen in range(generations): # do it n (generation) times
         # crossover the 2 parents to get 2 children
         # "genf.crossover"[0] gives child_1
         # "genf.crossover"[1] gives child_2
-        child_1 = svm_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[0]
-        child_2 = svm_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[1]
-
+        child_1, child_2 = svm_hp_opt.crossover(parent_1,parent_2,
+                                                prob_crsvr=prob_crsvr)
 
         # mutating the 2 children to get 2 mutated children
         # "genf.mutation"[0] gives mutated_child_1
