@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
-import random as rd
 #import time
 from sklearn import preprocessing
+from sklearn.decomposition import PCA
 import SVM_HParam_Opt_Functions as svm_hp_opt
 
 
@@ -11,14 +11,14 @@ data = pd.read_csv("../../Dataset/spambase.csv")
 data = data.sample(frac=1)
 
 # original data
-x_org_data = pd.DataFrame(data,columns=["X1","X2","X3","X4",
-                                        "X5","X6","X7","X8"])
+x_org_data = data.drop(["Y"],axis=1)
 y = pd.DataFrame(data,columns=["Y"]).values
 
-x_with_dummies = pd.get_dummies(x_org_data,columns=["X6","X8"])
-var_prep = preprocessing.MinMaxScaler()
+norm = preprocessing.MinMaxScaler()
+x = norm.fit_transform(x_org_data)
 
-x = var_prep.fit_transform(x_with_dummies)
+pca = PCA(n_components=30)
+x = pca.fit_transform(x)
 
 data_count = len(x)
 print("number of observations:",data_count)
@@ -29,8 +29,8 @@ print("-----------------------------------")
 #-------------------------------------------
 prob_crsvr = 1 # probablity of crossover
 prob_mutation = 0.2 # probablity of mutation
-population = 10 # population number
-generations = 2 # generation number
+population = 40 # population number
+generations = 10 # generation number
 kfold = 3
 # x and y decision variables' encoding
 # 12 genes for x and 12 genes for y (arbitrary number)
