@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import random as rd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 from sklearn import preprocessing
 from sklearn.neural_network import MLPRegressor
 
@@ -37,9 +37,8 @@ Aa1 = 0
 
 Cnt1 = len(X)
 
-kf = train_test_split.KFold(Cnt1, n_folds=kfold)
-
-for train_index, test_index in kf:
+kf = KFold(n_splits=kfold)
+for train_index,test_index in kf.split(X):
     X_train, X_test = X[train_index], X[test_index]
     Y_train, Y_test = Y[train_index], Y[test_index]
 
@@ -64,9 +63,8 @@ Aa1 = 0
 
 Cnt1 = len(X)
 
-kf = train_test_split.KFold(Cnt1, n_folds=kfold)
-
-for train_index, test_index in kf:
+kf = KFold(n_splits=kfold)
+for train_index,test_index in kf.split(X):
     X_train, X_test = X[train_index], X[test_index]
     Y_train, Y_test = Y[train_index], Y[test_index]
 

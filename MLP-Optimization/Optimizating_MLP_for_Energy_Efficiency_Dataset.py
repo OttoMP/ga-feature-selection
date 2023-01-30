@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import random as rd
+from pprint import pprint
 from copy import deepcopy
 #import time
 from sklearn import preprocessing
@@ -29,6 +30,7 @@ prob_crsvr = 1 # probablity of crossover
 prob_crsvr_int = 0.3 # Probability of crossover for integers
 prob_mutation = 0.3 # probablity of mutation
 prob_mutation_int = 0.2 # Probability of mutation for integers
+#prob_mutation_int = 0.2 # Probability of mutation for the solver
 population = 40 # population number
 generations = 20 # generation number
 kfold = 3
@@ -45,34 +47,36 @@ LB_X2 = 3
 ### Continuous ###
 # Where the first 15 represent X3 and the second 15 represent X4
 # x and y decision variables' encoding
-# 12 genes for x and 12 genes for y (arbitrary number)
+# 15 genes for x and 15 genes for y (arbitrary number)
 x_var_size = 15
 y_var_size = 15
 chromosome_size = x_var_size+y_var_size
 
-# so now, pool_of_solutions, has n (population) chromosomes
-# solution = np.array([X3, X4, 0,1,0,0,0,1,0,0,1,0,0,1,
-#                        0,1,1,1,0,0,1,0,1,1,1,0]) # initial solution
+# solution = np.array([X1, X2,
+#                      0,1,0,0,0,1,0,0,1,0,0,1,
+#                      0,1,1,1,0,0,1,0,1,1,1,0])
 pool_of_solutions = np.empty((0, chromosome_size+2))
 gene_pool = np.array([np.random.randint(2, size=chromosome_size) for _ in range(population)])
-#Later add solver type to solution
-#Solver_Type = ['adam']
 for i, gene in enumerate(gene_pool): # Shuffles the elements in the vector n times and stores them
-    #ST = rd.choice(Solver_Type)
     X1 = rd.randrange(6,10,2)
     X2 = rd.randrange(3,8,1)
     pool_of_solutions = np.vstack((pool_of_solutions, np.insert(gene, 0, (X1,X2))))
-    #n_list_ST = np.append(n_list_ST,ST)
+# so now, pool_of_solutions, has n (population) chromosomes
 
 #start_time = time.time() # start time (timing purposes)
 
+# A population is made of individuals
+# individual = np.array([obj_val,
+#                        X1, X2,
+#                        0,1,0,0,0,1,0,0,1,0,0,1,
+#                        0,1,1,1,0,0,1,0,1,1,1,0])
 population_0 = np.empty((0, chromosome_size+3))
 for i, solution in enumerate(pool_of_solutions):
-    individual = np.insert(solution, 0, mlp_hp_opt.objective_value(x,y,solution[1:],kfold)[2])
+    individual = np.insert(solution, 0, mlp_hp_opt.objective_value(x,y,solution,kfold)[2])
     population_0 = np.vstack((population_0, individual))
 
 sorted_best = np.array(sorted(population_0, key=lambda x:x[0]))
-darwin_guy=sorted_best[0]
+darwin_guy=sorted_best[0] # Elite individual
 
 
 # create an empty array to store a solution from each generation
@@ -116,11 +120,8 @@ for gen in range(generations): # do it n (generation) times
         # crossover the 2 parents to get 2 children
         # "genf.crossover"[0] gives child_1
         # "genf.crossover"[1] gives child_2
-        child_1 = mlp_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[0]
-        child_2 = mlp_hp_opt.crossover(parent_1,parent_2,
-                               prob_crsvr=prob_crsvr)[1]
-
+        child_1, child_2 = mlp_hp_opt.crossover(parent_1,parent_2,
+                                               prob_crsvr=prob_crsvr)
 
         # mutating the 2 children to get 2 mutated children
         # "genf.mutation"[0] gives mutated_child_1
@@ -200,7 +201,8 @@ for gen in range(generations): # do it n (generation) times
 
 #end_time = time.time() # end time (timing purposes)
 
-
+print("Elite list")
+pprint(best_of_a_generation)
 # for our very last generation, we have the last population
 # for this array of last population (convergence), there is a best solution
 # so we sort them from best to worst
