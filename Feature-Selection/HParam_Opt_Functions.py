@@ -12,7 +12,7 @@ def objective_value(x,y,chromosome,kfold=3):
     # To cover the case when chromoseme = [0, ... , 0]
     # and prevent program to crash
     if emp_list == []:
-        return 0
+        return 1
 
     new_x = x[:,emp_list]
 
