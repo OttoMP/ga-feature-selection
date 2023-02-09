@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
 #import time
-import HParam_Opt_Functions as hp_opt
+import GA_aux_func as hp_opt
 
 def main():
     # Loading the data, shuffling and preprocessing it
+    # Feature Selection
     data = pd.read_csv("../Dataset/breast-cancer-wisconsin.csv")
     data = data.sample(frac=1)
 
@@ -20,7 +21,7 @@ def main():
     prob_crsvr = 1 # probablity of crossover
     prob_mutation = 0.2 # probablity of mutation
     population = 10 # population number
-    generations = 3 # generation number
+    generations = 2 # generation number
 
     # chromosome encoding
     # one gene for each feature
@@ -99,8 +100,13 @@ def main():
         pool_of_solutions = np.array(new_population, dtype=object)
         best_of_a_generation.append(sorted(new_population,key=lambda x: x[0])[0])
 
+    print(best_of_a_generation)
     best_last_generation = best_of_a_generation[-1]
+    print("best last")
+    print(best_last_generation)
     best_of_all = sorted(best_of_a_generation, key=lambda x:x[0])[0]
+    print("best all")
+    print(best_of_all)
 
     # since we sorted them from best to worst
     # the best would be the first solution in the array
@@ -113,11 +119,11 @@ def main():
 
     print("\n------------------------------\n")
     print("Final Solution (Convergence):",best_last_generation[1]) # final solution entire chromosome
-    print("Obj Value - Convergence:",round(best_last_generation[0]),5) # obj val of final chromosome
+    print("Obj Value - Convergence:",best_last_generation[0]) # obj val of final chromosome
     print("Features included are:",emp_list_convergence)
     print()
     print("Final Solution (Best):",best_of_all[1]) # final solution entire chromosome
-    print("Obj Value - Best in Generations:",round(best_of_all[0]),5) # obj val of final chromosome
+    print("Obj Value - Best in Generations:",best_of_all[0]) # obj val of final chromosome
     print("Features included are:",emp_list_overall)
 
     # to decode the x and y chromosomes to their real values
